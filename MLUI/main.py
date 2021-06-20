@@ -1,6 +1,10 @@
 from flask import(
-    Blueprint, render_template, request, flash
+    Blueprint, render_template, request
 )
+import json
+import pandas as pd
+
+from MLAPI import Api
 
 bp = Blueprint('root', __name__, url_prefix='')
 
@@ -50,11 +54,33 @@ def view():
         return render_template('view.html', title="表格標題", data=test_data, main_color="warning")
 
     if request.method == "POST":
-        flash("test")
+        print(request.body)
+        return {"A": "Good"}
 
-@bp.route('/test')
+@bp.get('/test')
 def test():
     return render_template('test.html', title="輸出", test=test_data, main_color="info")
+
+@bp.post('/test')
+def test_result():
+
+    datas = json.loads(request.data.decode('utf-8'))
+    target = {
+        "ID":[],
+        "shop_id":[],
+        "item_id":[]
+    }
+
+    for data in datas:
+        target["ID"].append(int(data['data']['ID']))
+        target["shop_id"].append(int(data['data']['Shop Id']))
+        target["item_id"].append(int(data['data']['Item Id']))
+    
+    df = pd.DataFrame(data=target)
+    result = Api.predict(df, is_path=False)
+    print(result.values.tolist())
+
+    return json.dumps(result.values.tolist())
 
 @bp.route('/user')
 def user():

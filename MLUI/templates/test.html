@@ -3,10 +3,10 @@
 {% block content %}
 <div class="d-flex flex-column flex-wrap w-75 m-auto justify-content-center align-items-center">
     
-    <div class="accordion w-100 text-center" id="accordionView">
+    <div class="accordion w-100 text-center mt-3" id="accordionView">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseView" aria-expanded="true" aria-controls="collapseView">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseView" aria-expanded="false" aria-controls="collapseView">
                     測試資料
                 </button>
             </h2>
@@ -28,7 +28,7 @@
         <div class="accordion w-100 text-center" id="accordionResult">
             <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="false" aria-controls="collapseResult">
                         輸出結果
                     </button>
                 </h2>
@@ -42,7 +42,7 @@
                                         <th wdith="450px">下個月預測數量</th>
                                     </tr>
                                 </thead>
-                                <tbody></tbody>
+                                <tbody id="res-tbody"></tbody>
                             </table>
                         </div>
                     </div>
@@ -50,6 +50,7 @@
             </div>
         </div>
     </div>
+    <div style="height: 5rem;"></div>
 </div>
 
 <!-- Menu -->
@@ -120,6 +121,7 @@
     const COLUMNS = ["ID", "Shop Id", "Item Id"]
     const testDatas = [];
     const selectList = {};
+    const loading = document.getElementById('loading');
 
     class TestData{
 
@@ -196,8 +198,6 @@
             tmpFile.push(new TestData(tmp[0], tmp[1], tmp[2]));
         }
 
-        console.log(tmpFile);
-
     }
 
 
@@ -272,7 +272,6 @@
 
         for (let iter in selectList){
             let e = selectList[iter];
-            console.log(e);
             for (let key of COLUMNS){
                 if(e.isSelect[key]){
                     e.setKey(key, edit);
@@ -286,8 +285,6 @@
     }
 
     function loadFile(){
-        let loading = document.getElementById('loading');
-        let editModal = document.getElementById('editModal');
         loading.classList.remove('invisible');
         
         setTimeout(() => {
@@ -306,6 +303,40 @@
     function getResult(){
         const result = document.getElementById('result');
         result.classList.remove('invisible');
+        loading.classList.remove('invisible');
+
+        fetch("{{ url_for('root.test') }}", {
+            body: JSON.stringify(testDatas),
+            credentials: 'same-origin',
+            method: 'POST'
+        })
+        .then( res => {
+            return res.json();
+        })
+        .then( res => {
+            updateResult(res);
+            loading.classList.add('invisible');
+        })
+    }
+
+    function updateResult(res){
+
+        const tbody = document.getElementById('res-tbody');
+        
+        tbody.innerHTML = '';
+        
+        for (let items of res){
+            const tr = document.createElement('tr');
+
+            for (let item of items){
+                const td = document.createElement('td');
+                td.textContent = Math.round(item * 10000)/10000;
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        }
+
     }
 
     function validate(evt) {
