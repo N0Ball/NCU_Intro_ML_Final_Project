@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}開始介面{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block selector %}{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column justify-content-center align-items-center m-auto min-vw-100 min-vh-100">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded mx-auto d-block m-5" alt="...">
+        <a href="{{ url_for('root.view') }}">
+            <button type="button" class="btn btn-primary m-5">Start</button>
+        </a>
+    </div>
+{% endblock %}

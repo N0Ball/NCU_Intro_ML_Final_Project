@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content%}
+    <div class="d-flex flex-column flex-wrap w-75 m-auto">
+        <h2 class="text-center">
+            {{ data['title'] }}
+        </h2>
+        <div class="table w-100 overflow-auto">
+            <table class="table table-hover overflow-auto mb-5 tb-5">
+                <thead class="table-light">
+                    <tr>
+                        {% for columns in data['datas'] %}
+                            <th scope="col">
+                                <button name="{{ columns }}-checkbox" id="{{ columns }}-checkbox" class="table-head-checkbox text-start border-0 bg-transparent" onclick="columnClick(this)">
+                                {{ columns }}
+                                </button>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(data['size']) %}
+                        <tr>
+                            {% for columns in data['datas'] %}
+                            <td>{{ data['datas'][columns][i] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+        <div id="statics" class="w-100 overflow-auto mb-5">
+            <table class="table overflow-auto mb-5 tb-5">
+                <thead>
+                    <tr>
+                        {% for columns in data['datas'] %}
+                            <th scope="col">
+                                <button name="{{ columns }}-checkbox" id="{{ columns }}-checkbox" class="table-head-checkbox border-0 text-start bg-white" onclick="columnClick(this)">
+                                {{ columns }}
+                                </button>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        const table_heads = document.getElementsByClassName('table-head-checkbox');
+        var columns = [];
+
+        for (let table_head of table_heads){
+            columns.push({
+                "Object": table_head,
+                "selected": false,
+            })
+        }
+
+        console.log(columns);
+
+        function columnClick(target){
+
+            for (let column of columns){
+                if ( column['Object'] == target){
+                    column['select'] = ~column['select'];
+                }
+            }
+
+            update();
+        }
+
+        function update(){
+            for (let column of columns){
+
+                column['Object'].classList.remove('btn-outline-warning');
+                
+                if (column['select']){
+                    column['Object'].classList.add('btn-outline-warning');
+                }
+                
+            }
+        }
+
+    </script>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column flex-wrap w-75 m-auto justify-content-center align-items-center">
+    
+    <div class="accordion w-100 text-center" id="accordionView">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseView" aria-expanded="true" aria-controls="collapseView">
+                    測試資料
+                </button>
+            </h2>
+            <div id="collapseView" class="accordion-collapse collapse" data-bs-parent="#accordionView">
+                <div class="accordion-body">
+                    <div class="test-table d-flex w-100 overflow-auto justify-content-center align-items-center">
+                        <table class="table-hover">
+                            <thead class="table-light"></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary m-5" onclick="getResult()">結果</button>
+    <div class="invisible w-100 mb-5 tb-5" id="result">
+        <div class="accordion w-100 text-center" id="accordionResult">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="true" aria-controls="collapseResult">
+                        輸出結果
+                    </button>
+                </h2>
+                <div id="collapseResult" class="accordion-collapse collapse" data-bs-parent="#accordionResult">
+                    <div class="accordion-body">
+                        <div class="d-flex w-100 overflow-auto justify-content-center align-items-center mb-5 pb-5">
+                            <table class="table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th wdith="450px">下個月預測數量</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Menu -->
+<menu>
+    <button href="#" name="add-row" class="action" onclick="editClicked(this)">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+    </button>
+    <button href="#" name="edit-cell" class="action" data-bs-toggle="modal" data-bs-target="#editModal">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+    </button>
+    <button href="#" name="delete-row" class="action" onclick="editClicked(this)">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+    </button>
+    <button href="#" name="load-file" class="action" data-bs-toggle="modal" data-bs-target="#loadModal">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+    </button>
+    <a href="#" class="trigger">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="75x75 icon" height="75" width="75">
+    </a>
+</menu>
+
+<!-- Loading -->
+<div id="loading" class="d-flex justify-content-center align-items-center position-absolute start-0 top-0 w-100 h-100 bg-secondary invisible" style="opacity: 0.6;z-index:2000;">
+    <div class="spinner-border text-info" style="width: 4rem; height: 4rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">修改內容</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body m-auto">
+                <input type="text" onkeypress='validate(event)' id="editTableField">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" name="edit-cell" class="btn btn-primary" onclick="editClicked(this)" data-bs-dismiss="modal">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Modal -->
+<div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loadModalLabel">修改內容</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body m-auto">
+                <input type="file" id="file-selector" accept=".csv">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" name="load-file" class="btn btn-primary" onclick="editClicked(this)" data-bs-dismiss="modal">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const COLUMNS = ["ID", "Shop Id", "Item Id"]
+    const testDatas = [];
+    const selectList = {};
+
+    class TestData{
+
+        constructor(id, shopId, itemId){
+            this.data = {
+                "ID": id,
+                "Shop Id": shopId,
+                "Item Id": itemId
+            }
+            this.isSelect = {
+                "ID": false,
+                "Shop Id": false,
+                "Item Id": false
+            };
+            this.target = {
+                "Shop Id": null,
+                "Item Id": null
+            }
+        }
+
+        toggleSelect(key){
+            this.isSelect[key] = !this.isSelect[key];
+        }
+
+        deselect(){
+            for (let item in this.isSelect){
+                this.isSelect[item] = false;
+            }
+        }
+
+        getKey(key){
+            return this.data[key];
+        }
+
+        setKey(key, data){
+            this.data[key] = data;
+        }
+
+    }
+
+    const trigger = document.querySelector("menu > .trigger");
+    trigger.addEventListener('click', (e) => {
+        e.currentTarget.parentElement.classList.toggle("open");
+    });
+
+    const tbody = document.querySelector("tbody");
+    const thead = document.querySelector("thead");
+
+    let tr = document.createElement("tr");
+    for (let column of COLUMNS){
+        let th = document.createElement("th");
+        th.classList.add("p-3");
+        th.textContent = column;    
+        tr.appendChild(th);
+    }
+    thead.appendChild(tr);
+
+    const fileSelector = document.getElementById('file-selector');
+    var tmpFile = [];
+    fileSelector.addEventListener('change', (event) => {
+        const reader = new FileReader();
+        reader.onload = handleFileLoad;
+        reader.readAsText(event.target.files[0]);
+    });
+
+    function handleFileLoad(event){
+
+        tmpFile = [];
+
+        data = event.target.result.split('\n');
+        
+        for( let i = 1; i < data.length; i++){
+            let tmp = data[i].split(',')
+            tmpFile.push(new TestData(tmp[0], tmp[1], tmp[2]));
+        }
+
+        console.log(tmpFile);
+
+    }
+
+
+    function editClicked(action){
+        let name = action.getAttribute('name');
+        
+        switch (name) {
+            case "add-row":
+                addRow();
+                break;
+        
+            case "edit-cell":
+                editCell();
+                break;
+        
+            case "delete-row":
+                console.log('Deleting row');
+                break;
+        
+            case "load-file":
+                loadFile();
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    function addRow(newTestData){
+
+        let tr = document.createElement("tr");
+        newTestData = newTestData || new TestData(testDatas.length + 1, 0, 0);
+
+        for (let key of COLUMNS){
+            let td = document.createElement("td");
+            td.setAttribute('id', `${key}-${newTestData.getKey("ID")-1}`);
+            if (key != "ID"){
+                td.addEventListener('click', e => { setSelect(e.target); });
+            }
+            td.textContent = newTestData.getKey(key);
+            newTestData.target[key] = td;
+            tr.appendChild(td);
+        }
+
+        tbody.appendChild(tr);
+
+        testDatas.push(newTestData);
+
+    }
+
+    function setSelect(target){
+
+        let id = target.getAttribute('id').split('-');
+        let col = id[0];
+        let iter = id[1];
+
+        let selectTarget = testDatas[iter];
+        testDatas[iter].toggleSelect(col);
+
+        if (selectTarget.isSelect[col]){
+            selectList[selectTarget.data["ID"]] = selectTarget;
+        }else{
+            delete selectList[selectTarget.id];
+        }
+
+        testDatas[iter].target[col].classList.toggle('bg-secondary');
+    }
+
+    function editCell(){
+
+        const edit = document.getElementById('editTableField').value;
+
+        for (let iter in selectList){
+            let e = selectList[iter];
+            console.log(e);
+            for (let key of COLUMNS){
+                if(e.isSelect[key]){
+                    e.setKey(key, edit);
+                    e.target[key].textContent = edit;
+                    e.target[key].classList.remove('bg-secondary');
+                    e.isSelect[key] = false;
+                }
+            }
+        };
+
+    }
+
+    function loadFile(){
+        let loading = document.getElementById('loading');
+        let editModal = document.getElementById('editModal');
+        loading.classList.remove('invisible');
+        
+        setTimeout(() => {
+
+            for (let item of tmpFile){
+                addRow(item);
+            }
+
+            loading.classList.add('invisible');
+
+        }, 0);
+
+
+    }
+
+    function getResult(){
+        const result = document.getElementById('result');
+        result.classList.remove('invisible');
+    }
+
+    function validate(evt) {
+        var theEvent = evt || window.event;
+
+        // Handle paste
+        if (theEvent.type === 'paste') {
+            key = event.clipboardData.getData('text/plain');
+        } else {
+        // Handle key press
+            var key = theEvent.keyCode || theEvent.which;
+            key = String.fromCharCode(key);
+        }
+        var regex = /[0-9]|\./;
+        if( !regex.test(key) ) {
+            theEvent.returnValue = false;
+            if(theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="d-flex flex-column align-items-center justify-content-center">
+        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="img-thumbnail m-5" alt="user profile" height="250" width="250">
+        <h3 class="fw-bold">使用者名稱</h3>
+    </div>
+{% endblock %}
