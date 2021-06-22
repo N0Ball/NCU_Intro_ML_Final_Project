@@ -51,7 +51,7 @@ def index():
 def view():
 
     if request.method == "GET":
-        return render_template('view.html', title="表格標題", data=test_data, main_color="warning")
+        return render_template('view.html', title="輸入表格", data=test_data, main_color="warning")
 
     if request.method == "POST":
         print(request.body)
@@ -59,7 +59,7 @@ def view():
 
 @bp.get('/test')
 def test():
-    return render_template('test.html', title="輸出", test=test_data, main_color="info")
+    return render_template('test.html', title="輸出結果", test=test_data, main_color="info")
 
 @bp.post('/test')
 def test_result():

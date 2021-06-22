@@ -6,11 +6,11 @@
     <div class="accordion w-100 text-center mt-3" id="accordionView">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseView" aria-expanded="false" aria-controls="collapseView">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseView" aria-expanded="false" aria-controls="collapseView">
                     測試資料
                 </button>
             </h2>
-            <div id="collapseView" class="accordion-collapse collapse" data-bs-parent="#accordionView">
+            <div id="collapseView" class="accordion-collapse collapse show" data-bs-parent="#accordionView">
                 <div class="accordion-body">
                     <div class="test-table d-flex w-100 overflow-auto justify-content-center align-items-center">
                         <table class="table-hover">
@@ -18,62 +18,51 @@
                             <tbody></tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <button class="btn btn-primary m-5" onclick="getResult()">結果</button>
-    <div class="invisible w-100 mb-5 tb-5" id="result">
-        <div class="accordion w-100 text-center" id="accordionResult">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResult" aria-expanded="false" aria-controls="collapseResult">
-                        輸出結果
-                    </button>
-                </h2>
-                <div id="collapseResult" class="accordion-collapse collapse" data-bs-parent="#accordionResult">
-                    <div class="accordion-body">
-                        <div class="d-flex w-100 overflow-auto justify-content-center align-items-center mb-5 pb-5">
-                            <table class="table">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th wdith="450px">下個月預測數量</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="res-tbody"></tbody>
-                            </table>
-                        </div>
+                    <div id="pagination" class=" mt-3 d-flex justify-content-end">
+                        <ul class="pagination">
+                            <li class="page-item" id="btn_prev">
+                                <a href="javascript:prevPage()" class="page-link">Prev</a>
+                            </li>
+                            <li class="page-item" id="btn_next">
+                                <a href="javascript:nextPage()" class="page-link">Next</a>
+                            </li>
+                            <li class="page-item" id="page_number">
+                                <a class="page-link">
+                                    p. <span id="page"></span>
+                                </a> 
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <button class="btn btn-primary m-5" onclick="getResult()">測試</button>
     <div style="height: 5rem;"></div>
 </div>
 
 <!-- Menu -->
 <menu>
     <button href="#" name="add-row" class="action" onclick="editClicked(this)">
-        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+        <img src="{{ url_for('static', filename='/src/img/add_row.png') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
     </button>
     <button href="#" name="edit-cell" class="action" data-bs-toggle="modal" data-bs-target="#editModal">
-        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+        <img src="{{ url_for('static', filename='/src/img/edit_cell.png') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
     </button>
     <button href="#" name="delete-row" class="action" onclick="editClicked(this)">
-        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+        <img src="{{ url_for('static', filename='/src/img/del_row.png') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
     </button>
     <button href="#" name="load-file" class="action" data-bs-toggle="modal" data-bs-target="#loadModal">
-        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+        <img src="{{ url_for('static', filename='/src/img/load_file.png') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
     </button>
     <a href="#" class="trigger">
-        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="75x75 icon" height="75" width="75">
+        <img src="{{ url_for('static', filename='/src/img/edit.png') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="75x75 icon" height="75" width="75">
     </a>
 </menu>
 
 <!-- Loading -->
-<div id="loading" class="d-flex justify-content-center align-items-center position-absolute start-0 top-0 w-100 h-100 bg-secondary invisible" style="opacity: 0.6;z-index:2000;">
+<div id="loading" class="d-flex justify-content-center align-items-center position-fixed start-0 top-0 w-100 h-100 bg-secondary invisible" style="opacity: 0.6;z-index:2000;">
     <div class="spinner-border text-info" style="width: 4rem; height: 4rem;" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
@@ -103,7 +92,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="loadModalLabel">修改內容</h5>
+                <h5 class="modal-title" id="loadModalLabel">上傳檔案</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body m-auto">
@@ -119,9 +108,11 @@
 
 <script>
     const COLUMNS = ["ID", "Shop Id", "Item Id"]
-    const testDatas = [];
     const selectList = {};
     const loading = document.getElementById('loading');
+    const ROWS_PER_PAGE = 15;
+    var testDatas = [];
+    var current_page = 1;
 
     class TestData{
 
@@ -214,7 +205,7 @@
                 break;
         
             case "delete-row":
-                console.log('Deleting row');
+                deleteRow();
                 break;
         
             case "load-file":
@@ -229,22 +220,19 @@
     function addRow(newTestData){
 
         let tr = document.createElement("tr");
-        newTestData = newTestData || new TestData(testDatas.length + 1, 0, 0);
+        let changeFlag = false;
 
-        for (let key of COLUMNS){
-            let td = document.createElement("td");
-            td.setAttribute('id', `${key}-${newTestData.getKey("ID")-1}`);
-            if (key != "ID"){
-                td.addEventListener('click', e => { setSelect(e.target); });
-            }
-            td.textContent = newTestData.getKey(key);
-            newTestData.target[key] = td;
-            tr.appendChild(td);
+        if (newTestData == undefined){
+            changeFlag = true;
         }
 
-        tbody.appendChild(tr);
-
+        newTestData = newTestData || new TestData(testDatas.length, 0, 0);
         testDatas.push(newTestData);
+
+        
+        if (changeFlag){
+            changePage(current_page);
+        }
 
     }
 
@@ -266,9 +254,40 @@
         testDatas[iter].target[col].classList.toggle('bg-secondary');
     }
 
+    function deleteRow(){
+
+        if (Object.keys(selectList).length == 0){
+            alert("Can't edit with nothing!");
+            return;
+        }
+
+        for (let iter in selectList){
+            let e = selectList[iter];
+            for (let key of COLUMNS){
+                if(e.isSelect[key]){
+                    testDatas.splice(testDatas.indexOf(e), 1);
+                }
+            }
+        };
+
+        changePage(current_page);
+
+    }
+
     function editCell(){
 
         const edit = document.getElementById('editTableField').value;
+
+        if (edit == ''){
+            alert("Can't edit with empty amount!");
+            return;
+        }
+
+        if (Object.keys(selectList).length == 0){
+            alert("Can't edit with nothing!");
+            return;
+        }
+
 
         for (let iter in selectList){
             let e = selectList[iter];
@@ -285,7 +304,9 @@
     }
 
     function loadFile(){
+
         loading.classList.remove('invisible');
+        testDatas = [];
         
         setTimeout(() => {
 
@@ -295,14 +316,15 @@
 
             loading.classList.add('invisible');
 
+            changePage(current_page);
+        
         }, 0);
 
-
     }
+    
 
     function getResult(){
-        const result = document.getElementById('result');
-        result.classList.remove('invisible');
+
         loading.classList.remove('invisible');
 
         fetch("{{ url_for('root.test') }}", {
@@ -314,29 +336,28 @@
             return res.json();
         })
         .then( res => {
-            updateResult(res);
+            console.log(res.length);
+            createCsvFile(res);
             loading.classList.add('invisible');
         })
+
     }
 
-    function updateResult(res){
+    function createCsvFile(data){
 
-        const tbody = document.getElementById('res-tbody');
+        let header = "ID, item_cnt_month\n";
+        let csvContent = header + data.map(e => e.join(",")).join("\n");
+        var fileName = "Result.csv";
+        var blob = new Blob([csvContent], {
+            type : "application/octet-stream"
+        });
+        var href = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        document.body.appendChild(link);
+        link.href = href;
+        link.download = fileName;
+        link.click();
         
-        tbody.innerHTML = '';
-        
-        for (let items of res){
-            const tr = document.createElement('tr');
-
-            for (let item of items){
-                const td = document.createElement('td');
-                td.textContent = Math.round(item * 10000)/10000;
-                tr.appendChild(td);
-            }
-
-            tbody.appendChild(tr);
-        }
-
     }
 
     function validate(evt) {
@@ -355,6 +376,86 @@
             theEvent.returnValue = false;
             if(theEvent.preventDefault) theEvent.preventDefault();
         }
+    }
+
+    function prevPage()
+    {
+        if (current_page > 1) {
+            current_page--;
+            changePage(current_page);
+        }
+    }
+
+    function nextPage()
+    {
+        if (current_page < numPages()) {
+            current_page++;
+            changePage(current_page);
+        }
+    }
+
+    function changePage(page)
+    {
+        var btn_next = document.getElementById("btn_next");
+        var btn_prev = document.getElementById("btn_prev");
+        var page_span = document.getElementById("page");
+        var page_number = document.getElementById("page_number");
+
+        // Validate page
+        if (page > numPages()) page = numPages();
+        if (page < 1) page = 1;
+        
+        tbody.innerHTML = "";
+        
+        
+        for (var i = (page-1) * ROWS_PER_PAGE; i < (page * ROWS_PER_PAGE) && i < testDatas.length; i++) {
+            let tr = document.createElement("tr");
+            for (let key of COLUMNS){
+                let td = document.createElement("td");
+                td.setAttribute('id', `${key}-${testDatas[i].data["ID"]}`);
+                if (key != "ID"){
+                    td.addEventListener('click', e => { setSelect(e.target); });
+                }
+                td.textContent = testDatas[i].data[key];
+                testDatas[i].target[key] = td;
+                tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+        }
+
+
+        page_span.innerHTML = page;
+
+        if (numPages() == 0){
+            btn_prev.classList.add("invisible");
+            btn_next.classList.add("invisible");
+            page_number.classList.add("invisible");
+        }else{
+            btn_prev.classList.remove("invisible");
+            btn_next.classList.remove("invisible");
+            page_number.classList.remove("invisible");
+        }
+
+        if (page == 1) {
+            btn_prev.classList.add("disabled");
+        } else {
+            btn_prev.classList.remove("disabled");
+        }
+
+        if (page == numPages()) {
+            btn_next.classList.add("disabled");
+        } else {
+            btn_next.classList.remove("disabled");
+        }
+    }
+
+    function numPages()
+    {
+        return Math.ceil(testDatas.length / ROWS_PER_PAGE);
+    }
+
+    window.onload = function() {
+        changePage(1);
     }
 
 </script>

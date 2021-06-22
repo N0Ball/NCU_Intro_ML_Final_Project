@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-tw">
-<title>{% block title %}{% endblock %}</title>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     {% block header %}{% endblock %}
+    <title>{{ title }}</title>
 </head>
 <body>
     <section class="content">
@@ -17,7 +17,7 @@
 
     {% block head %}
     <i class="position-absolute start-0 top-0">
-        <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-{{ main_color }} border-3 z-depth-2 m-3 d-block" alt="50x50 icon" height="50" width="50">
+        <img src="{{ url_for('static', filename='/src/img/icon.png') }}" class="rounded-circle border border-{{ main_color }} border-3 z-depth-2 m-3 d-block bg-white p-2 p-2" alt="50x50 icon" height="50" width="50">
     </i>
     <div class="head d-flex m-3">
         <h1 class="text-center m-auto mt-2">{{ title }}</h1>
@@ -32,17 +32,17 @@
         <div class="fixed-bottom bg-{{ main_color }} d-flex justify-content-evenly ">
             <a href="{{ url_for('root.view') }}">
                 <i>
-                    <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+                    <img src="{{ url_for('static', filename='/src/img/view.png') }}" class="rounded-circle border border-dark border-3 z-depth-2 m-2 d-block p-2" alt="50x50 icon" height="50" width="50">
                 </i>
             </a>
             <a href="{{ url_for('root.test') }}">
                 <i>
-                    <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+                    <img src="{{ url_for('static', filename='/src/img/test.png') }}" class="rounded-circle border border-dark border-3 z-depth-2 m-2 d-block p-2" alt="50x50 icon" height="50" width="50">
                 </i>
             </a>
             <a href="{{ url_for('root.user') }}">
                 <i>
-                    <img src="{{ url_for('static', filename='/src/img/waiting.jpg') }}" class="rounded-circle border border-secondary border-3 z-depth-2 m-2 d-block" alt="50x50 icon" height="50" width="50">
+                    <img src="{{ url_for('static', filename='/src/img/user.png') }}" class="rounded-circle border border-dark border-3 z-depth-2 m-2 d-block p-2" alt="50x50 icon" height="50" width="50">
                 </i>
             </a>
         </div>
